@@ -19,19 +19,22 @@
 
 <h2>Add a Book</h2>
 
-<form onsubmit="addBook(event)">
-    <label>Book Name:</label><br>
-    <input type="text" id="bookName"><br><br>
+<div id="bookSection">
+    <form onsubmit="addBook(event)">
+        <label>Book Name:</label><br>
+        <input type="text" id="bookName"><br><br>
 
-    <label>Author:</label><br>
-    <input type="text" id="author"><br><br>
+        <label>Author:</label><br>
+        <input type="text" id="author"><br><br>
 
-    <label>Upload Image:</label><br>
-    <input type="file" id="image"><br><br>
+        <label>Upload Image:</label><br>
+        <input type="file" id="image" onchange="previewImage(event)"><br><br>
 
-    <button type="submit">Add Book</button>
-</form>
+        <img id="preview" width="150" style="display:none;"><br><br>
 
+        <button type="submit">Add Book</button>
+    </form>
+</div>
 <hr>
 
 <h2>Available Books</h2>
@@ -40,8 +43,30 @@
     <li>Harry Potter</li>
 </ul>
 <script>
+    function previewImage(event) {
+    let file = event.target.files[0];
+
+    if (file) {
+        let reader = new FileReader();
+
+        reader.onload = function() {
+            let img = document.getElementById("preview");
+            img.src = reader.result;
+            img.style.display = "block";
+        }
+
+        reader.readAsDataURL(file);
+    }
+}
 function addBook(event) {
     event.preventDefault();
+    let user = localStorage.getItem("loggedInUser");
+
+    if (!user) {
+        alert("Please login first!");
+        return;
+    }
+   
 
     let name = document.getElementById("bookName").value;
     let author = document.getElementById("author").value;
@@ -64,28 +89,44 @@ function displayBooks() {
 
     let books = JSON.parse(localStorage.getItem("books")) || [];
 
-    books.forEach(book => {
+    books.forEach((book, index) => {
         let li = document.createElement("li");
-        li.textContent = book.name + " by " + book.author;
+
+        li.innerHTML = `
+            <strong>${book.name}</strong> by ${book.author}<br>
+            ${book.image ? `<img src="${book.image}" width="100"><br>` : ""}
+            <button onclick="deleteBook(${index})">Delete</button>
+        `;
+
         list.appendChild(li);
     });
 }
-
 function checkLogin() {
     let user = localStorage.getItem("loggedInUser");
 
+    let section = document.getElementById("bookSection");
+
     if (user) {
         document.getElementById("userStatus").textContent = "Logged in as: " + user;
+        section.style.display = "block";
     } else {
         document.getElementById("userStatus").textContent = "Not logged in";
+        section.style.display = "none";
     }
 }
-
 function logout() {
     localStorage.removeItem("loggedInUser");
     checkLogin();
 }
+function deleteBook(index) {
+    let books = JSON.parse(localStorage.getItem("books")) || [];
 
+    books.splice(index, 1);
+
+    localStorage.setItem("books", JSON.stringify(books));
+
+    displayBooks();
+}
 // Load everything
 window.onload = function() {
     displayBooks();
