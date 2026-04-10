@@ -8,6 +8,8 @@
 <h1>📚 Book Exchange Platform</h1>
 
 <nav>
+    <p id="userStatus"></p>
+<button onclick="logout()">Logout</button>
     <a href="index.html">Home</a> |
     <a href="login.html">Login</a> |
     <a href="requests.html">Requests</a>
@@ -44,21 +46,51 @@ function addBook(event) {
     let name = document.getElementById("bookName").value;
     let author = document.getElementById("author").value;
 
-    if (name === "" || author === "") {
-        alert("Please fill all fields");
-        return;
-    }
+    let books = JSON.parse(localStorage.getItem("books")) || [];
 
-    let list = document.querySelector("ul");
+    books.push({ name: name, author: author });
 
-    let newItem = document.createElement("li");
-    newItem.textContent = name + " by " + author;
+    localStorage.setItem("books", JSON.stringify(books));
 
-    list.appendChild(newItem);
+    displayBooks();
 
     document.getElementById("bookName").value = "";
     document.getElementById("author").value = "";
 }
+
+function displayBooks() {
+    let list = document.querySelector("ul");
+    list.innerHTML = "";
+
+    let books = JSON.parse(localStorage.getItem("books")) || [];
+
+    books.forEach(book => {
+        let li = document.createElement("li");
+        li.textContent = book.name + " by " + book.author;
+        list.appendChild(li);
+    });
+}
+
+function checkLogin() {
+    let user = localStorage.getItem("loggedInUser");
+
+    if (user) {
+        document.getElementById("userStatus").textContent = "Logged in as: " + user;
+    } else {
+        document.getElementById("userStatus").textContent = "Not logged in";
+    }
+}
+
+function logout() {
+    localStorage.removeItem("loggedInUser");
+    checkLogin();
+}
+
+// Load everything
+window.onload = function() {
+    displayBooks();
+    checkLogin();
+};
 </script>
 </body>
 </html>
