@@ -17,15 +17,15 @@
 
 <h2>Add a Book</h2>
 
-<form>
+<form onsubmit="addBook(event)">
     <label>Book Name:</label><br>
-    <input type="text"><br><br>
+    <input type="text" id="bookName"><br><br>
 
     <label>Author:</label><br>
-    <input type="text"><br><br>
+    <input type="text" id="author"><br><br>
 
     <label>Upload Image:</label><br>
-    <input type="file"><br><br>
+    <input type="file" id="image"><br><br>
 
     <button type="submit">Add Book</button>
 </form>
@@ -37,6 +37,28 @@
     <li>Rich Dad Poor Dad</li>
     <li>Harry Potter</li>
 </ul>
+<script>
+function addBook(event) {
+    event.preventDefault();
 
+    let name = document.getElementById("bookName").value;
+    let author = document.getElementById("author").value;
+
+    if (name === "" || author === "") {
+        alert("Please fill all fields");
+        return;
+    }
+
+    let list = document.querySelector("ul");
+
+    let newItem = document.createElement("li");
+    newItem.textContent = name + " by " + author;
+
+    list.appendChild(newItem);
+
+    document.getElementById("bookName").value = "";
+    document.getElementById("author").value = "";
+}
+</script>
 </body>
 </html>
