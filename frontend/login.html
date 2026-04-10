@@ -5,7 +5,7 @@
 </head>
 <body>
 
-<h2>Login</h2>
+<h2>Login / Register</h2>
 
 <nav>
     <a href="index.html">Home</a> |
@@ -14,15 +14,58 @@
 
 <hr>
 
-<form>
-    <label>Email:</label><br>
-    <input type="email"><br><br>
+<h3>Register</h3>
+<form onsubmit="register(event)">
+    <input type="email" id="regEmail" placeholder="Email"><br><br>
+    <input type="password" id="regPass" placeholder="Password"><br><br>
+    <button type="submit">Register</button>
+</form>
 
-    <label>Password:</label><br>
-    <input type="password"><br><br>
+<hr>
 
+<h3>Login</h3>
+<form onsubmit="login(event)">
+    <input type="email" id="loginEmail" placeholder="Email"><br><br>
+    <input type="password" id="loginPass" placeholder="Password"><br><br>
     <button type="submit">Login</button>
 </form>
+
+<p id="message"></p>
+
+<script>
+function register(event) {
+    event.preventDefault();
+
+    let email = document.getElementById("regEmail").value;
+    let pass = document.getElementById("regPass").value;
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    users.push({ email: email, password: pass });
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    document.getElementById("message").textContent = "Registered successfully!";
+}
+
+function login(event) {
+    event.preventDefault();
+
+    let email = document.getElementById("loginEmail").value;
+    let pass = document.getElementById("loginPass").value;
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    let validUser = users.find(u => u.email === email && u.password === pass);
+
+    if (validUser) {
+        localStorage.setItem("loggedInUser", email);
+        document.getElementById("message").textContent = "Login successful!";
+    } else {
+        document.getElementById("message").textContent = "Invalid credentials!";
+    }
+}
+</script>
 
 </body>
 </html>
